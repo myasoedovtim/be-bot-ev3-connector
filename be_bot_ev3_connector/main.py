@@ -19,7 +19,16 @@ MQTT_PASSWORD=""
 client = MQTTClient(MQTT_ClientID, MQTT_HOST, MQTT_PORT, MQTT_USER, MQTT_PASSWORD)
 client.connect()
 
-client.publish("/robot/topic", MQTT_ClientID + ' Started')
+message = {
+  "device_id": MQTT_ClientID,
+  "name": "ev3robot",
+  "description": "My first robot with bebot",
+  "type": "test",
+  "is_active": True,
+  "actions": [],
+  "sensors": []
+}
+client.publish("/bebot/to/api/init", str(message))
 
 ev3 = EV3Brick()
 
