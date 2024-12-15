@@ -1,1 +1,6 @@
-pybricks
+pybricks.hubs
+pybricks.ev3devices
+pybricks.parameters
+pybricks.tools
+pybricks.robotics
+mqtt.robust
