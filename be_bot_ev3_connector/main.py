@@ -31,41 +31,49 @@ client = MQTTClient(MQTT_ClientID, MQTT_HOST, MQTT_PORT, MQTT_USER, MQTT_PASSWOR
 # Подключение к брокеру mqtt.
 client.connect()
 
-# Сообщение для инициализации (добавление) устройства в bebot.api.
+# Сообщение для инициализации (добавления) устройства в bebot.api.
 message = {
   "device_id": MQTT_ClientID,
   "name": "ev3robot",
   "description": "My first robot with bebot",
   "type": "test",
   "is_active": True,
-  "actions": ["forward","backward"],
+  "actions": ["forward","backward", "left", "right"],
   "sensors": ["Infrared"]
 }
 
 # Функция обработки входящих сообщений.
 def getmessages(topic, msg):
-        # Сообщение на экран ev3 с текстом полученного сообщения (для отладки).
-        ev3.screen.print(str(msg.decode()))
-        # Преобразование в формат JSON.
-        data = json.loads(msg.decode())
-        # Проверяем наличие ключа forward в полученном сообщении.
-        if "forward" in data:
-             # Подаем команду на двигатели (отрицательное значение, потому что моторы стоят наоборот).
-             robot.straight(-data["backward"])
-        # Проверяем наличие ключа forward в полученном сообщении
-        if "backward" in data:
-             # Подаем команду на двигатели.
-             robot.straight(data["backward"])
-        # Проверяем наличие ключа getsensor в полученном сообщении
-        if "getsensor" in data:
-             # Проверяем, что запрошены данные инфрокрасного датчика.
-             if data["getsensor"] == "Infrared":
-                  # Отображаем данные сенсора на экране (для отладки).
-                  ev3.screen.print(obstacle_sensor.distance())
-                  # Формируем json сообщение с данными сенсора для отправки.
-                  sensor_message = {"device_id": MQTT_ClientID,"name": "Infrared","value": obstacle_sensor.distance()}
-                  # Публикуем сообщение в брокере.
-                  client.publish("/bebot/to/api/sensor", str(sensor_message))
+     # Сообщение на экран ev3 с текстом полученного сообщения (для отладки).
+     ev3.screen.print(str(msg.decode()))
+     # Преобразование в формат JSON.
+     data = json.loads(msg.decode())
+     # Проверяем наличие ключа forward в полученном сообщении.
+     if "forward" in data:
+          # Подаем команду на двигатели (отрицательное значение, потому что моторы стоят наоборот).
+          robot.straight(-data["backward"])
+     # Проверяем наличие ключа forward в полученном сообщении
+     if "backward" in data:
+          # Подаем команду на двигатели.
+          robot.straight(data["backward"])
+     # Проверяем наличие ключа left в полученном сообщении
+     if "left" in data:
+          # Подаем команду на двигатели.
+          left_motor.dc(data["left"])
+     # Проверяем наличие ключа right в полученном сообщении
+     if "right" in data:
+          # Подаем команду на двигатели.
+          left_motor.dc(data["left"])
+     # Проверяем наличие ключа getsensor в полученном сообщении
+     if "getsensor" in data:
+          # Проверяем, что запрошены данные инфрокрасного датчика.
+          if data["getsensor"] == "Infrared":
+               # Отображаем данные сенсора на экране (для отладки).
+               ev3.screen.print(obstacle_sensor.distance())
+               # Формируем json сообщение с данными сенсора для отправки.
+               sensor_message = {"device_id": MQTT_ClientID,"name": "Infrared","value": obstacle_sensor.distance()}
+               # Публикуем сообщение в брокере.
+               client.publish("/bebot/to/api/sensor", str(sensor_message))
 
 
 # Публикация сообщения инициализации.
@@ -86,6 +94,9 @@ robot = DriveBase(left_motor, right_motor, wheel_diameter=55.5, axle_track=160)
 
 # Подаем звуковой сигнал об успешной загрузке управляющей программы.
 ev3.speaker.beep()
+
+#Отображаем на дисплее текущий заряд батареи
+ev3.screen.print("Voltage is: {}".format(brick.battery.voltage()))
 
 # Счетчик циклов (используется для отправки сообщений со статусом робота).
 counter = 0
