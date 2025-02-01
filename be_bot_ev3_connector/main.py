@@ -38,7 +38,7 @@ message = {
   "description": "My first robot with bebot",
   "type": "test",
   "is_active": True,
-  "actions": ["forward","backward", "left", "right"],
+  "actions": ["forward","backward", "turn", "stop"],
   "sensors": ["Infrared"]
 }
 
@@ -50,20 +50,24 @@ def getmessages(topic, msg):
      data = json.loads(msg.decode())
      # Проверяем наличие ключа forward в полученном сообщении.
      if "forward" in data:
-          # Подаем команду на двигатели (отрицательное значение, потому что моторы стоят наоборот).
-          robot.straight(-data["backward"])
+          if data["forward"] == 0:
+               # Подаем команду двигаться непрерывно.
+               robot.drive(200)
+          else
+               # Подаем команду вигаться на определенное расстояние.
+               robot.straight(data["forward"])
      # Проверяем наличие ключа forward в полученном сообщении
      if "backward" in data:
           # Подаем команду на двигатели.
-          robot.straight(data["backward"])
+          robot.straight(-data["backward"])
      # Проверяем наличие ключа left в полученном сообщении
-     if "left" in data:
-          # Подаем команду на двигатели.
-          left_motor.dc(data["left"])
-     # Проверяем наличие ключа right в полученном сообщении
-     if "right" in data:
-          # Подаем команду на двигатели.
-          left_motor.dc(data["left"])
+     if "turn" in data:
+          # Подаем команду на двигатели (значение это градусы).
+          robot.turn(data["turn"])
+    # Проверяем наличие ключа left в полученном сообщении
+     if "stop" in data:
+          # Подаем команду на двигатели (значение это градусы).
+          robot.stop(Stop.BRAKE)
      # Проверяем наличие ключа getsensor в полученном сообщении
      if "getsensor" in data:
           # Проверяем, что запрошены данные инфрокрасного датчика.
