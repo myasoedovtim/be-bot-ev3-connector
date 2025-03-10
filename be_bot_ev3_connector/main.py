@@ -18,13 +18,13 @@ ev3 = EV3Brick()
 # Идентификатор устройства (использовался генератор https://www.uuidgenerator.net/guid).
 MQTT_ClientID = "1fa419a0-a9fa-4866-a1e2-a0e651ec0b29"
 # Хост брокера (IP адрес или доменное имя).
-MQTT_HOST="m6.wqtt.ru"
+MQTT_HOST="m4.wqtt.ru"
 # Порт брокера.
-MQTT_PORT=17810
+MQTT_PORT=12274
 # Имя пользователя.
-MQTT_USER=""
+MQTT_USER="u_NF377U"
 # Пароль.
-MQTT_PASSWORD=""
+MQTT_PASSWORD="6dOdxj1k"
 
 # Создание объекта класса MQTTClient (передаем параметры подключения).
 client = MQTTClient(MQTT_ClientID, MQTT_HOST, MQTT_PORT, MQTT_USER, MQTT_PASSWORD)
@@ -52,8 +52,8 @@ def getmessages(topic, msg):
      if "forward" in data:
           if data["forward"] == 0:
                # Подаем команду двигаться непрерывно.
-               robot.drive(200)
-          else
+               robot.drive(200,0)
+          else:
                # Подаем команду вигаться на определенное расстояние.
                robot.straight(data["forward"])
      # Проверяем наличие ключа backward в полученном сообщении
@@ -99,8 +99,11 @@ robot = DriveBase(left_motor, right_motor, wheel_diameter=55.5, axle_track=160)
 # Подаем звуковой сигнал об успешной загрузке управляющей программы.
 ev3.speaker.beep()
 
-#Отображаем на дисплее текущий заряд батареи
-ev3.screen.print("Voltage is: {}".format(brick.battery.voltage()))
+#Отображаем сообщение о запуске приложения
+ev3.screen.print("Bebot started")
+
+# Отображаем на дисплее текущий заряд батареи
+ev3.screen.print("Voltage is: {}".format(ev3.battery.voltage()))
 
 # Счетчик циклов (используется для отправки сообщений со статусом робота).
 counter = 0
